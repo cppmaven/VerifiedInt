@@ -9,6 +9,7 @@
 #include <testsystem.hpp>
 #include <stringutils.hpp>
 #include <climits>
+#include <boost/integer_traits.hpp>
 #include "verified_int.hpp"
 
 namespace {
@@ -119,12 +120,47 @@ TEST(verified_intMultiplication_TDD, NoNegativeOverflowPosNeg) {
         lhs *= rhs;
     }));
 }
+
 TEST(verified_intMultiplication_TDD, NoNegativeOverflowNegPos) {
     verified_int<int8_t, throw_overflow> lhs(-12);
     verified_int<int8_t, throw_overflow> rhs(10);
     EXPECT_NO_THROW(({
         lhs *= rhs;
     }));
+}
+
+TEST(verified_intMultiplication_TDD, SignedMaxTimesNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs *= rhs;
+    }));
+    EXPECT_EQ(lhs, boost::integer_traits<int8_t>::const_min + 1);
+}
+
+TEST(verified_intMultiplication_TDD, UnSignedMaxTimesNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_ANY_THROW(({
+        lhs *= rhs;
+    }));
+}
+
+TEST(verified_intMultiplication_TDD, SignedMinTimesNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_ANY_THROW(({
+        lhs *= rhs;
+    }));
+}
+
+TEST(verified_intMultiplication_TDD, UnSignedMinTimesNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs *= rhs;
+    }));
+    EXPECT_EQ(lhs, 0);
 }
 
 } // namespace anonymous

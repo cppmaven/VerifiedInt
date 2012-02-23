@@ -60,6 +60,12 @@ template <
 >
 struct detect_overflow_impl_multiplication;
 
+template <
+    typename L, bool is_left_signed,
+    typename R, bool is_right_signed
+>
+struct detect_overflow_impl_division;
+
 template <typename L, typename R>
 struct detect_overflow {
     static bool const is_left_signed = is_signed<L>::value;
@@ -82,6 +88,9 @@ struct detect_overflow {
     static overflow_result detect_multiplication_overflow(L const left, R const right) {
         return detect_overflow_impl_multiplication<L, is_left_signed,
                                       R, is_right_signed>::detect_multiplication_overflow(left, right);
+    }
+    static overflow_result detect_division_overflow(L const left, R const right) {
+        return detect_overflow_impl_division<L, is_left_signed, R, is_right_signed>::detect_division_overflow(left, right);
     }
 };
 
@@ -477,6 +486,48 @@ struct detect_overflow_impl_multiplication<
         return result;
     }
 };
+
+// Primary template
+template <
+    typename L, bool is_left_signed,
+    typename R, bool is_right_signed
+>
+struct detect_overflow_impl_division {
+    static overflow_result detect_division_overflow(L const left, R const right) {
+        (void)left;
+        (void)right;
+        return e_no_overflow;
+    }
+};
+
+template <typename L, typename R>
+struct detect_overflow_impl_division<
+    L, false,
+    R, true
+> {
+    static overflow_result detect_division_overflow(L const left, R const right) {
+        overflow_result result = e_no_overflow;
+        if (left == integer_traits<L>::const_max && right == -1) {
+            result = e_negative_overflow;
+        }
+        return result;
+    }
+};
+
+template <typename L, typename R>
+struct detect_overflow_impl_division<
+    L, true,
+    R, true
+> {
+    static overflow_result detect_division_overflow(L const left, R const right) {
+        overflow_result result = e_no_overflow;
+        if (left == integer_traits<L>::const_min && right == -1) {
+            result = e_positive_overflow;
+        }
+        return result;
+    }
+};
+
 } // namespace boost
 
 #endif // VERIFIED_INT_OVERFLOW_DETECTION_HPP

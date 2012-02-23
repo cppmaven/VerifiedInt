@@ -122,7 +122,6 @@ public:
         value_ = P<T>::verify_addition(value_, RHS); \
         return *this; \
     }
-    GEN_OPERATOR_PLUS_EQUALS(verified_int, right.value_)
     GEN_OPERATOR_PLUS_EQUALS(uint8_t, right)
     GEN_OPERATOR_PLUS_EQUALS(uint16_t, right)
     GEN_OPERATOR_PLUS_EQUALS(uint32_t, right)
@@ -138,7 +137,6 @@ public:
         value_ = P<T>::verify_subtraction(value_, RHS); \
         return *this; \
     }
-    GEN_OPERATOR_MINUS_EQUALS(verified_int, right.value_)
     GEN_OPERATOR_MINUS_EQUALS(uint8_t, right)
     GEN_OPERATOR_MINUS_EQUALS(uint16_t, right)
     GEN_OPERATOR_MINUS_EQUALS(uint32_t, right)
@@ -154,7 +152,6 @@ public:
         value_ = P<T>::verify_multiplication(value_, RHS); \
         return *this; \
     }
-    GEN_OPERATOR_TIMES_EQUALS(verified_int, right.value_)
     GEN_OPERATOR_TIMES_EQUALS(uint8_t, right)
     GEN_OPERATOR_TIMES_EQUALS(uint16_t, right)
     GEN_OPERATOR_TIMES_EQUALS(uint32_t, right)
@@ -170,7 +167,6 @@ public:
         value_ = P<T>::verify_division(value_, RHS); \
         return *this; \
     }
-    GEN_OPERATOR_DIVIDE_EQUALS(verified_int, right.value_)
     GEN_OPERATOR_DIVIDE_EQUALS(uint8_t, right)
     GEN_OPERATOR_DIVIDE_EQUALS(uint16_t, right)
     GEN_OPERATOR_DIVIDE_EQUALS(uint32_t, right)
@@ -186,7 +182,6 @@ public:
         value_ = P<T>::verify_modulus(value_, RHS); \
         return *this; \
     }
-    GEN_OPERATOR_MOD_EQUALS(verified_int, right.value_)
     GEN_OPERATOR_MOD_EQUALS(uint8_t, right)
     GEN_OPERATOR_MOD_EQUALS(uint16_t, right)
     GEN_OPERATOR_MOD_EQUALS(uint32_t, right)
@@ -206,7 +201,7 @@ private:
 // ***********************************************
 
 // Performs math on two verified_ints.
-// Both must share the same T, xLower, xUpper and P.
+// Both must share the same Type and Policy.
 #define GEN_BINARY_OPERATORS_VERIFIED_SAME(OPERATOR_MATH, MATH_ASSIGN) \
     template <typename T, template <typename T> class P> \
     verified_int<T, P> OPERATOR_MATH( \
@@ -279,7 +274,7 @@ struct nan_int {
 
 // ***********************************************
 // Even simpler usable types.  These can also be
-// used for metaassert unittests.
+// used for metaassert unit-tests.
 // ***********************************************
 typedef throw_int<uint8_t>::type  verified_uint8_t;
 typedef throw_int<uint16_t>::type verified_uint16_t;

@@ -29,4 +29,38 @@ TEST(verified_intDivision_TDD, DivideNegative) {
         test /= 2;
     }));
 }
+
+TEST(verified_intDivision_TDD, SignedMaxDivideNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs /= rhs;
+    }));
+    EXPECT_EQ(lhs, boost::integer_traits<int8_t>::const_min + 1);
+}
+
+TEST(verified_intDivision_TDD, UnSignedMaxDivideNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_THROW(({
+        lhs /= rhs;
+    }), boost::negative_overflow);
+}
+
+TEST(verified_intDivision_TDD, SignedMinDivideNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_THROW(({
+        lhs /= rhs;
+    }), boost::positive_overflow);
+}
+
+TEST(verified_intDivision_TDD, UnSignedMinDivideNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs /= rhs;
+    }));
+    EXPECT_EQ(lhs, 0);
+}
 } // namespace anonymous

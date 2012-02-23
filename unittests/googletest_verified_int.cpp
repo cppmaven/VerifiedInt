@@ -35,12 +35,12 @@ TEST(verified_int_TDD, VariousForms) {
 TEST(verified_int_TDD, Typedef) {
     verified_uint8_t test(uint8_t(0U));
     verified_uint8_t test2(uint8_t(0xF000U));
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_uint8_t test3(0xF000U);
-    }));
-    EXPECT_ANY_THROW(({
+    }), boost::positive_overflow);
+    EXPECT_THROW(({
         test = 0x100;
-    }));
+    }), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, Negation) {
@@ -56,39 +56,39 @@ TEST(verified_int_TDD, Negation) {
 }
 
 TEST(verified_int_TDD, Unsigned8WithNegative) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_uint8_t valueA(-0x80);
-    }));
+    }), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, Unsigned8WithNegative1) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_uint8_t valueA(-0x80000);
-    }));
+    }), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, Unsigned16WithNegative) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_uint16_t valueA(-0x8000);
-    }));
+    }), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, Signed8WithUnsigned) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_int8_t valueA(0x80U);
-    }));
+    }), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, Signed16WithUnsigned) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_int16_t valueA(0x8000U);
-    }));
+    }), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, Signed32WithUnsigned) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_int32_t valueA(0x80000000U);
-    }));
+    }), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, UnaryMinusOperator) {
@@ -108,25 +108,25 @@ TEST(verified_int_TDD, UnaryMinusOperator2) {
     EXPECT_EQ(-120, valueC);
 }
 
-TEST(verified_int_TDD, UnaryMinusOperator3) {
+TEST(verified_int_TDD, UnaryMinusOperatorNegateUnsigned) {
     verified_uint8_t valueA(120);
     verified_int32_t valueB(0);
 
-    EXPECT_ANY_THROW(valueB = -valueA);
+    EXPECT_THROW(valueB = -valueA, boost::negative_overflow);
 }
 
-TEST(verified_int_TDD, UnaryMinusOperator4) {
+TEST(verified_int_TDD, UnaryMinusOperatorNegateMaxSigned) {
     verified_int8_t valueA(0x7F);
-    verified_int32_t valueB(0);
+    verified_int8_t valueB(0);
 
-    EXPECT_ANY_THROW(valueB = -valueA);
+    EXPECT_NO_THROW(valueB = -valueA);
 }
 
-TEST(verified_int_TDD, UnaryMinusOperator5) {
+TEST(verified_int_TDD, UnaryMinusOperatorNegateMinSigned) {
     verified_int8_t valueA(-0x80);
     verified_int32_t valueB(0);
 
-    EXPECT_ANY_THROW(valueB = -valueA);
+    EXPECT_THROW(valueB = -valueA, boost::positive_overflow);
 }
 
 //TEST(verified_int_TDD, MixedTypes1) {
@@ -142,22 +142,22 @@ TEST(verified_int_TDD, MixedTypes2) {
     verified_uint16_t valueB(3U);
     verified_uint16_t valueC(7U);
 
-    EXPECT_ANY_THROW(valueC = valueA + static_cast<uint8_t>(valueA));
-    EXPECT_ANY_THROW(valueC = valueA + uint8_t(valueA));
+    EXPECT_THROW(valueC = valueA + static_cast<uint8_t>(valueA), boost::metaassert_exception);
+    EXPECT_THROW(valueC = valueA + uint8_t(valueA), boost::metaassert_exception);
 
-    EXPECT_ANY_THROW(valueC = static_cast<verified_uint16_t>(valueA) + valueB);
+    EXPECT_THROW(valueC = static_cast<verified_uint16_t>(valueA) + valueB, boost::metaassert_exception);
 }
 
 TEST(verified_int_TDD, MixedTypes3) {
     verified_uint32_t valueZ(0xF0000000U);
 
     verified_uint32_t valueA(valueZ);
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_uint8_t valueB(valueZ);
-    }));
-    EXPECT_ANY_THROW(({
+    }), boost::metaassert_exception);
+    EXPECT_THROW(({
         verified_uint8_t valueC(valueA);
-    }));
+    }), boost::metaassert_exception);
 }
 
 TEST(verified_int_TDD, MixedTypes4) {
@@ -165,7 +165,7 @@ TEST(verified_int_TDD, MixedTypes4) {
     verified_uint16_t valueB(3U);
     verified_uint16_t valueC(7U);
 
-    EXPECT_ANY_THROW(valueC = static_cast<verified_uint16_t>(valueA) + valueB);
+    EXPECT_THROW(valueC = static_cast<verified_uint16_t>(valueA) + valueB, boost::metaassert_exception);
 }
 
 TEST(verified_int_TDD, TestTypedefAssignment) {
@@ -174,14 +174,14 @@ TEST(verified_int_TDD, TestTypedefAssignment) {
 }
 
 TEST(verified_int_TDD, ShouldThrowOnConstruction) {
-    EXPECT_ANY_THROW(({
+    EXPECT_THROW(({
         verified_int<uint8_t, throw_overflow> test(256U);
-    }));
+    }), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, TestTypedefOverflow) {
     verified_uint8_t test(254U);
-    EXPECT_ANY_THROW(test += verified_uint8_t(254));
+    EXPECT_THROW(test += verified_uint8_t(254), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, ReallyLargeInteger1) {
@@ -214,33 +214,33 @@ TEST(verified_int_TDD, PostfixDecrementOperator) {
 TEST(verified_int_TDD, DecrementOperatorOverflow) {
     verified_int<uint8_t, throw_overflow> test(1);
     EXPECT_NO_THROW(--test);
-    EXPECT_ANY_THROW(--test);
+    EXPECT_THROW(--test, boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, WrapAroundOverflow) {
     verified_int<uint8_t, throw_overflow> test(10);
-    EXPECT_ANY_THROW(test += static_cast<verified_uint8_t>(0xFF));
+    EXPECT_THROW(test += static_cast<verified_uint8_t>(0xFF), boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, WrapAroundBelowOverflow) {
     verified_int<uint8_t, throw_overflow> test(10);
-    EXPECT_ANY_THROW(test -= verified_uint8_t(0xFF));
+    EXPECT_THROW(test -= verified_uint8_t(0xFF), boost::negative_overflow);
 }
 TEST(verified_int_TDD, WrapAroundBelowOverflowNeg) {
     verified_int<uint8_t, throw_overflow> test(10);
-    EXPECT_ANY_THROW(test -= static_cast<verified_uint8_t>(-0x70));
+    EXPECT_THROW(test -= static_cast<verified_uint8_t>(-0x70), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, WrapAroundBelowOverflowPos) {
     verified_int<uint8_t, throw_overflow> test(10);
-    EXPECT_ANY_THROW(test -= verified_uint8_t(144));
+    EXPECT_THROW(test -= verified_uint8_t(144), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, DownConversionToSmallerTypeFailsIfOutOfBounds) {
     verified_int<uint16_t, throw_overflow> valueA(260);
     verified_int<uint8_t, throw_overflow> valueB(0);
-    EXPECT_ANY_THROW(valueB = valueA - 0x06);
-    EXPECT_ANY_THROW(valueB = valueA + 0x06);
+    EXPECT_THROW(valueB = valueA - 0x06, boost::metaassert_exception);
+    EXPECT_THROW(valueB = valueA + 0x06, boost::metaassert_exception);
 }
 
 TEST(verified_int_TDD, PrefixIncrementOperator) {
@@ -260,7 +260,7 @@ TEST(verified_int_TDD, PostfixIncrementOperator) {
 TEST(verified_int_TDD, IncrementOperatorOverflow) {
     verified_int<uint8_t, throw_overflow> test(254);
     EXPECT_NO_THROW(++test);
-    EXPECT_ANY_THROW(++test);
+    EXPECT_THROW(++test, boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, IncrementWithAnotherVerified) {
@@ -282,13 +282,13 @@ TEST(verified_int_TDD, IncrementWithAnInt) {
 TEST(verified_int_TDD, IncrementWithANegativeNegativeOverflow) {
     verified_int<int8_t, throw_overflow> valueA(-0x70);
 
-    EXPECT_ANY_THROW(valueA += verified_int8_t(-0x20));
+    EXPECT_THROW(valueA += verified_int8_t(-0x20), boost::negative_overflow);
 }
 
 TEST(verified_int_TDD, IncrementWithANegativeNegativeOverflow2) {
     verified_int<uint8_t, throw_overflow> valueA(2U);
 
-    EXPECT_ANY_THROW(valueA += verified_uint8_t(-5));
+    EXPECT_THROW(valueA += verified_uint8_t(-5), boost::negative_overflow);
 }
 
 //TEST(verified_int_TDD, IncrementWithANegativeNegativeOverflow3) {
@@ -381,14 +381,14 @@ TEST(verified_int_TDD, IncrementWithAnotherVerifiedExceedDataLimits) {
     verified_int<uint8_t, throw_overflow> valueA(0xF0);
     verified_int<uint8_t, throw_overflow> valueB(0xF0);
 
-    EXPECT_ANY_THROW(valueA += valueB);
+    EXPECT_THROW(valueA += valueB, boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, AddWithAnotherVerifiedExceedDataLimits) {
     verified_int<uint8_t, throw_overflow> valueA(0xF0);
     verified_int<uint8_t, throw_overflow> valueB(0xF0);
 
-    EXPECT_ANY_THROW(valueA = valueA + valueB);
+    EXPECT_THROW(valueA = valueA + valueB, boost::positive_overflow);
 }
 
 //TEST(verified_int_TDD, DifferentDataTypes) {
@@ -417,7 +417,7 @@ TEST(verified_int_TDD, AddWithAnotherVerifiedOperatorPlus7) {
     verified_int<uint8_t, throw_overflow> valueB(0xF0);
     verified_int<uint8_t, throw_overflow> valueC(0U);
 
-    EXPECT_ANY_THROW(valueC = valueA + valueB);
+    EXPECT_THROW(valueC = valueA + valueB, boost::metaassert_exception);
 }
 
 TEST(verified_int_TDD, AddWithAnotherVerifiedOperatorPlus8) {
@@ -425,7 +425,7 @@ TEST(verified_int_TDD, AddWithAnotherVerifiedOperatorPlus8) {
     verified_int<uint8_t, throw_overflow> valueB(0xF0);
     verified_int<uint8_t, throw_overflow> valueC(0U);
 
-    EXPECT_ANY_THROW(valueC = valueB + valueA);
+    EXPECT_THROW(valueC = valueB + valueA, boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, AddWithAnotherOverflowExceeded) {
@@ -433,7 +433,7 @@ TEST(verified_int_TDD, AddWithAnotherOverflowExceeded) {
     verified_int<uint8_t, throw_overflow> valueB(0xF0U);
     verified_int<uint8_t, throw_overflow> valueC(0U);
 
-    EXPECT_ANY_THROW(valueC = valueA + valueB);
+    EXPECT_THROW(valueC = valueA + valueB, boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, AddWithAnotherLimitsExceededDuringAdd) {
@@ -441,7 +441,7 @@ TEST(verified_int_TDD, AddWithAnotherLimitsExceededDuringAdd) {
     verified_int<uint8_t, throw_overflow> valueB(130U);
     verified_int<uint8_t, throw_overflow> valueC(0U);
 
-    EXPECT_ANY_THROW(valueC = valueA + valueB);
+    EXPECT_THROW(valueC = valueA + valueB, boost::positive_overflow);
 }
 
 TEST(verified_int_TDD, AddWithAnotherLimitsExceededOnAssign) {
@@ -449,6 +449,6 @@ TEST(verified_int_TDD, AddWithAnotherLimitsExceededOnAssign) {
     verified_int<uint8_t, throw_overflow> valueB(130U);
     verified_int<uint8_t, throw_overflow> valueC(0U);
 
-    EXPECT_ANY_THROW(valueC = valueA + valueB);
+    EXPECT_THROW(valueC = valueA + valueB, boost::positive_overflow);
 }
 } // namespace anonymous

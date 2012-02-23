@@ -6,10 +6,8 @@
 #ifndef METAASSERT_HPP
 #define METAASSERT_HPP
 
-#ifndef BOOST_METAASSERT_UNITTEST
 #include <boost/mpl/assert.hpp>
-#else // BOOST_METAASSERT_UNITTEST
-#include <boost/mpl/assert.hpp>
+#ifdef BOOST_METAASSERT_UNITTEST
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/bool.hpp>
 #include <boost/preprocessor/cat.hpp>

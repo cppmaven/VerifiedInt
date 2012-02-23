@@ -570,4 +570,67 @@ TEST(verified_intAddition_TDD, Add_int32_from_int32_Sum_BelowOverflow) {
         test += static_cast<int32_t>(-0x7FFFFFFF - 0x1);
     }));
 }
+
+TEST(verified_intDivision_TDD, SignedMaxAddNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, UnSignedMaxAddNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, SignedMinAddNegOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_ANY_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, UnSignedMinAddNegOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_ANY_THROW(({
+        lhs += rhs;
+    }));
+}
+TEST(verified_intDivision_TDD, SignedMaxAddOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(1);
+    EXPECT_ANY_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, UnSignedMaxAddOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(1);
+    EXPECT_ANY_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, SignedMinAddOne) {
+    verified_int<int8_t, throw_overflow> lhs(boost::integer_traits<int8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(1);
+    EXPECT_NO_THROW(({
+        lhs += rhs;
+    }));
+}
+
+TEST(verified_intDivision_TDD, UnSignedMinAddOne) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_min);
+    verified_int<int8_t, throw_overflow> rhs(1);
+    EXPECT_NO_THROW(({
+        lhs += rhs;
+    }));
+}
 } // namespace anonymous
