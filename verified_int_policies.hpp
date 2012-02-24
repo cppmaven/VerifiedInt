@@ -11,7 +11,7 @@
 #include <exception>
 #include <boost/throw_exception.hpp>
 #include <boost/integer_traits.hpp>
-#include "detail/verified_int_overflow_detection.hpp"
+#include "verified_int_overflow_detection.hpp"
 
 namespace boost {
 
@@ -189,12 +189,16 @@ struct saturate_overflow {
     static L verify_assignment(R const right) {
         L result;
         overflow_result overflowResult = detect_overflow<L, R>::detect_assignment_overflow(right);
-        if (overflowResult == e_positive_overflow) {
+        switch (overflowResult) {
+        case e_positive_overflow:
             result = integer_traits<L>::const_max;
-        } else if (overflowResult == e_negative_overflow) {
+            break;
+        case e_negative_overflow:
             result = integer_traits<L>::const_min;
-        } else {
+            break;
+        default:
             result = right;
+            break;
         }
         return result;
     }
@@ -202,12 +206,16 @@ struct saturate_overflow {
     static L verify_addition(L const left, R const right) {
         L result;
         overflow_result overflowResult = detect_overflow<L, R>::detect_addition_overflow(left, right);
-        if (overflowResult == e_positive_overflow) {
+        switch (overflowResult) {
+        case e_positive_overflow:
             result = integer_traits<L>::const_max;
-        } else if (overflowResult == e_negative_overflow) {
+            break;
+        case e_negative_overflow:
             result = integer_traits<L>::const_min;
-        } else {
+            break;
+        default:
             result = left + right;
+            break;
         }
         return result;
     }
@@ -215,12 +223,16 @@ struct saturate_overflow {
     static L verify_subtraction(L const left, R const right) {
         L result;
         overflow_result overflowResult = detect_overflow<L, R>::detect_subtraction_overflow(left, right);
-        if (overflowResult == e_positive_overflow) {
+        switch (overflowResult) {
+        case e_positive_overflow:
             result = integer_traits<L>::const_max;
-        } else if (overflowResult == e_negative_overflow) {
+            break;
+        case e_negative_overflow:
             result = integer_traits<L>::const_min;
-        } else {
+            break;
+        default:
             result = left - right;
+            break;
         }
         return result;
     }
@@ -228,12 +240,16 @@ struct saturate_overflow {
     static L verify_multiplication(L const left, R const right) {
         L result;
         overflow_result overflowResult = detect_overflow<L, R>::detect_multiplication_overflow(left, right);
-        if (overflowResult == e_positive_overflow) {
+        switch (overflowResult) {
+        case e_positive_overflow:
             result = integer_traits<L>::const_max;
-        } else if (overflowResult == e_negative_overflow) {
+            break;
+        case e_negative_overflow:
             result = integer_traits<L>::const_min;
-        } else {
+            break;
+        default:
             result = left * right;
+            break;
         }
         return result;
     }
@@ -241,12 +257,16 @@ struct saturate_overflow {
     static L verify_division(L const left, R const right) {
         L result;
         overflow_result overflowResult = detect_overflow<L, R>::detect_division_overflow(left, right);
-        if (overflowResult == e_positive_overflow) {
+        switch (overflowResult) {
+        case e_positive_overflow:
             result = integer_traits<L>::const_max;
-        } else if (overflowResult == e_negative_overflow) {
+            break;
+        case e_negative_overflow:
             result = integer_traits<L>::const_min;
-        } else {
+            break;
+        default:
             result = left / right;
+            break;
         }
         return result;
     }

@@ -10,7 +10,7 @@
 #include <boost/cstdint.hpp>
 #include "metaassert.hpp"
 #include "verified_int_policies.hpp"
-#include "detail/verified_int_overflow_detection.hpp"
+#include "verified_int_overflow_detection.hpp"
 
 namespace boost {
 
@@ -273,8 +273,10 @@ struct nan_int {
 };
 
 // ***********************************************
-// Even simpler usable types.  These can also be
-// used for metaassert unit-tests.
+// Even simpler usable types.  These are also
+// convenient for writing unit-tests since they
+// throw on overflow, which can be detected by a
+// test framework.
 // ***********************************************
 typedef throw_int<uint8_t>::type  verified_uint8_t;
 typedef throw_int<uint16_t>::type verified_uint16_t;
