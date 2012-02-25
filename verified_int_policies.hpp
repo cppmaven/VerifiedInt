@@ -15,9 +15,15 @@
 
 namespace boost {
 
-// This function is designed to be eliminated by compiler optimizations
+// This policy is designed to reduce verified_int to a built-in via compiler optimizations.
 struct ignore_overflow
 {
+    template <typename L, typename R>
+    struct detect_overflow
+    {
+        typedef do_not_detect_overflow<L, R> type;
+    };
+
     template <typename T>
     static T handle_overflow(T const value, overflow_result const detected)
     {
@@ -52,6 +58,12 @@ struct negative_overflow_detected : virtual overflow_detected
 
 struct throw_overflow
 {
+    template <typename L, typename R>
+    struct detect_overflow
+    {
+        typedef do_detect_overflow<L, R> type;
+    };
+
     template <typename T>
     static T handle_overflow(T const value, overflow_result const detected)
     {
@@ -70,6 +82,12 @@ struct throw_overflow
 
 struct assert_overflow
 {
+    template <typename L, typename R>
+    struct detect_overflow
+    {
+        typedef do_detect_overflow<L, R> type;
+    };
+
     template <typename T>
     static T handle_overflow(T const value, overflow_result const detected)
     {
@@ -81,6 +99,12 @@ struct assert_overflow
 
 struct saturate_overflow
 {
+    template <typename L, typename R>
+    struct detect_overflow
+    {
+        typedef do_detect_overflow<L, R> type;
+    };
+
     template <typename T>
     static T handle_overflow(T const value, overflow_result const detected)
     {

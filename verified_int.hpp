@@ -32,7 +32,8 @@ public:
     #define GEN_CONVERSION_CONSTRUCTOR(TYPE) \
     explicit verified_int(TYPE const value) : value_(value) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_assignment(value); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_assignment(value); \
         value_ = P::handle_overflow(value_, detected); \
     }
     GEN_CONVERSION_CONSTRUCTOR(uint8_t)
@@ -55,7 +56,8 @@ public:
     #define GEN_CONVERSION_ASSIGNMENT(TYPE) \
     verified_int& operator=(TYPE const right) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_assignment(right); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_assignment(right); \
         value_ = P::handle_overflow(right, detected); \
         return *this; \
     }
@@ -123,7 +125,8 @@ public:
     #define GEN_OPERATOR_PLUS_EQUALS(TYPE) \
     verified_int& operator+=(TYPE const right) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_addition(value_, right); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_addition(value_, right); \
         value_ += right; \
         value_ = P::handle_overflow(value_, detected); \
         return *this; \
@@ -139,9 +142,10 @@ public:
     #undef GEN_OPERATOR_PLUS_EQUALS
 
     #define GEN_OPERATOR_MINUS_EQUALS(TYPE) \
-    verified_int& operator-=(TYPE const right)
+    verified_int& operator-=(TYPE const right) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_subtraction(value_, right); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_subtraction(value_, right); \
         value_ -= right; \
         value_ = P::handle_overflow(value_, detected); \
         return *this; \
@@ -157,9 +161,10 @@ public:
     #undef GEN_OPERATOR_MINUS_EQUALS
 
     #define GEN_OPERATOR_TIMES_EQUALS(TYPE) \
-    verified_int& operator*=(TYPE const right)
+    verified_int& operator*=(TYPE const right) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_multiplication(value_, right); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_multiplication(value_, right); \
         value_ *= right; \
         value_ = P::handle_overflow(value_, detected); \
         return *this; \
@@ -175,9 +180,10 @@ public:
     #undef GEN_OPERATOR_TIMES_EQUALS
 
     #define GEN_OPERATOR_DIVIDE_EQUALS(TYPE) \
-    verified_int& operator/=(TYPE const right)
+    verified_int& operator/=(TYPE const right) \
     { \
-        overflow_result detected = detect_overflow<T, TYPE>::detect_overflow_division(value_, right); \
+        typedef typename P::template detect_overflow<T, TYPE>::type detection_type; \
+        overflow_result detected = detection_type::detect_overflow_division(value_, right); \
         value_ /= right; \
         value_ = P::handle_overflow(value_, detected); \
         return *this; \
@@ -193,7 +199,7 @@ public:
     #undef GEN_OPERATOR_DIVIDE_EQUALS
 
     #define GEN_OPERATOR_MOD_EQUALS(TYPE) \
-    verified_int& operator%=(TYPE const right)
+    verified_int& operator%=(TYPE const right) \
     { \
         value_ %= right; \
         return *this; \

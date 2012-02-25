@@ -36,6 +36,25 @@ enum overflow_result {
     e_negative_overflow_detected
 };
 
+template <typename L, typename R>
+struct do_not_detect_overflow {
+    static overflow_result detect_overflow_assignment(R const right) {
+        return e_no_overflow_detected;
+    }
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        return e_no_overflow_detected;
+    }
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        return e_no_overflow_detected;
+    }
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
+        return e_no_overflow_detected;
+    }
+    static overflow_result detect_overflow_division(L const left, R const right) {
+        return e_no_overflow_detected;
+    }
+};
+
 template <
     typename L, bool is_left_signed, bool is_left_larger,
     typename R, bool is_right_signed, bool is_right_larger
@@ -67,7 +86,7 @@ template <
 struct detect_overflow_impl_division;
 
 template <typename L, typename R>
-struct detect_overflow {
+struct do_detect_overflow {
     static bool const is_left_signed = is_signed<L>::value;
     static bool const is_right_signed = is_signed<R>::value;
     static bool const is_left_larger = sizeof(L) > sizeof(R);
