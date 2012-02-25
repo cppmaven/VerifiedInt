@@ -18,6 +18,7 @@ namespace {
 
 using boost::verified_int;
 using boost::throw_overflow;
+using boost::ignore_overflow;
 using boost::overflow_detected;
 using respiratory::MaxValue;
 using respiratory::MinValue;
@@ -68,6 +69,22 @@ TEST(verified_int_TDD, CommonTypeGoesUnsigned64) {
     EXPECT_THROW(({
         verified_int<TheType, throw_overflow> var(integer_traits<int64_t>::const_min);
     }), overflow_detected);
+}
+
+TEST(verified_int_TDD, compareIgnoreOverflowToBuiltInA) {
+    verified_int<uint_t, ignore_overflow> var(123);
+}
+
+TEST(verified_int_TDD, compareIgnoreOverflowToBuiltInB) {
+    uint_t var(123);
+}
+
+TEST(verified_int_TDD, compareIgnoreOverflowToBuiltInC) {
+    verified_int<uint_t, ignore_overflow> var(9);
+}
+
+TEST(verified_int_TDD, compareIgnoreOverflowToBuiltInD) {
+    uint_t var(9);
 }
 
 TEST(verified_int_TDD, VariousForms) {

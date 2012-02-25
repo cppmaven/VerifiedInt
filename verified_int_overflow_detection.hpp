@@ -547,6 +547,24 @@ struct detect_overflow_impl_division<
     }
 };
 
+struct overflow_detection_off
+{
+    template <typename L, typename R>
+    struct detection
+    {
+        typedef do_not_detect_overflow<L, R> type;
+    };
+};
+
+struct overflow_detection_on
+{
+    template <typename L, typename R>
+    struct detection
+    {
+        typedef do_detect_overflow<L, R> type;
+    };
+};
+
 } // namespace boost
 
 #endif // VERIFIED_INT_OVERFLOW_DETECTION_HPP
