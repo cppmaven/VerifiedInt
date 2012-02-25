@@ -31,9 +31,9 @@
 namespace boost {
 
 enum overflow_result {
-    e_no_overflow = 0,
-    e_positive_overflow,
-    e_negative_overflow
+    e_no_overflow_detected = 0,
+    e_positive_overflow_detected,
+    e_negative_overflow_detected
 };
 
 template <
@@ -73,24 +73,24 @@ struct detect_overflow {
     static bool const is_left_larger = sizeof(L) > sizeof(R);
     static bool const is_right_larger = sizeof(L) < sizeof(R);
 
-    static overflow_result detect_assignment_overflow(R const right) {
+    static overflow_result detect_overflow_assignment(R const right) {
         return detect_overflow_impl_assignment<L, is_left_signed, is_left_larger,
-                                        R, is_right_signed, is_right_larger>::detect_assignment_overflow(right);
+                                        R, is_right_signed, is_right_larger>::detect_overflow_assignment(right);
     }
-    static overflow_result detect_addition_overflow(L const left, R const right) {
+    static overflow_result detect_overflow_addition(L const left, R const right) {
         return detect_overflow_impl_addition<L, is_left_signed, is_left_larger,
-                                      R, is_right_signed, is_right_larger>::detect_addition_overflow(left, right);
+                                      R, is_right_signed, is_right_larger>::detect_overflow_addition(left, right);
     }
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
         return detect_overflow_impl_subtraction<L, is_left_signed, is_left_larger,
-                                         R, is_right_signed, is_right_larger>::detect_subtraction_overflow(left, right);
+                                         R, is_right_signed, is_right_larger>::detect_overflow_subtraction(left, right);
     }
-    static overflow_result detect_multiplication_overflow(L const left, R const right) {
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
         return detect_overflow_impl_multiplication<L, is_left_signed,
-                                      R, is_right_signed>::detect_multiplication_overflow(left, right);
+                                      R, is_right_signed>::detect_overflow_multiplication(left, right);
     }
-    static overflow_result detect_division_overflow(L const left, R const right) {
-        return detect_overflow_impl_division<L, is_left_signed, R, is_right_signed>::detect_division_overflow(left, right);
+    static overflow_result detect_overflow_division(L const left, R const right) {
+        return detect_overflow_impl_division<L, is_left_signed, R, is_right_signed>::detect_overflow_division(left, right);
     }
 };
 
@@ -100,9 +100,9 @@ template <
     typename R, bool is_right_signed, bool is_right_larger
 >
 struct detect_overflow_impl_assignment {
-    static overflow_result detect_assignment_overflow(R const right) {
+    static overflow_result detect_overflow_assignment(R const right) {
         (void)right;
-        return e_no_overflow;
+        return e_no_overflow_detected;
     }
 };
 
@@ -111,10 +111,10 @@ struct detect_overflow_impl_assignment<
     L, false, is_left_larger,
     R, false, true
 > {
-    static overflow_result detect_assignment_overflow(R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_assignment(R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > integer_traits<L>::const_max) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -125,12 +125,12 @@ struct detect_overflow_impl_assignment<
     L, true, is_left_larger,
     R, true, true
 > {
-    static overflow_result detect_assignment_overflow(R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_assignment(R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > integer_traits<L>::const_max) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         } else if (right < integer_traits<L>::const_min) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -141,10 +141,10 @@ struct detect_overflow_impl_assignment<
     L, false, is_left_larger,
     R, true, false
 > {
-    static overflow_result detect_assignment_overflow(R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_assignment(R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right < 0) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -155,12 +155,12 @@ struct detect_overflow_impl_assignment<
     L, false, is_left_larger,
     R, true, true
 > {
-    static overflow_result detect_assignment_overflow(R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_assignment(R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > integer_traits<L>::const_max) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         } else if (right < 0) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -171,10 +171,10 @@ struct detect_overflow_impl_assignment<
     L, true, false,
     R, false, is_right_larger
 > {
-    static overflow_result detect_assignment_overflow(R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_assignment(R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > static_cast<R>(integer_traits<L>::const_max)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -185,10 +185,10 @@ struct detect_overflow_impl_addition<
     L, false, is_left_larger,
     R, false, false
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (static_cast<L>(right) > integer_traits<L>::const_max - left) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -199,10 +199,10 @@ struct detect_overflow_impl_addition<
     L, false, is_left_larger,
     R, false, true
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > static_cast<R>(integer_traits<L>::const_max - left)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -213,12 +213,12 @@ struct detect_overflow_impl_addition<
     L, true, false,
     R, true, is_right_larger
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && left > integer_traits<L>::const_max - right) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         } else if (right < 0 && right < integer_traits<L>::const_min - left) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -234,17 +234,17 @@ struct detect_overflow_impl_addition<
     L, true, true,
     R, true, is_right_larger
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left >= 0) {
             // Negative overflow is impossible here.  Only check for positive overflow.
             if (right > 0 && right > integer_traits<L>::const_max - left) {
-                result = e_positive_overflow;
+                result = e_positive_overflow_detected;
             }
         } else { // left < 0
             // Positive overflow is impossible here.  Only check for negative overflow.
             if (right < 0 && right < integer_traits<L>::const_min - left) {
-                result = e_negative_overflow;
+                result = e_negative_overflow_detected;
             }
         }
         return result;
@@ -256,12 +256,12 @@ struct detect_overflow_impl_addition<
     L, false, is_left_larger,
     R, true, true
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && right > static_cast<R>(integer_traits<L>::const_max - left)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         } else if (right < 0 && right < static_cast<R>(integer_traits<L>::const_min - left)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -272,12 +272,12 @@ struct detect_overflow_impl_addition<
     L, false, is_left_larger,
     R, true, false
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && static_cast<L>(right) > integer_traits<L>::const_max - left) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         } else if (right < 0 && left < static_cast<L>(integer_traits<L>::const_min - right)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -288,10 +288,10 @@ struct detect_overflow_impl_addition<
     L, true, false,
     R, false, is_right_larger
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > static_cast<R>(integer_traits<L>::const_max - left)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -302,11 +302,11 @@ struct detect_overflow_impl_addition<
     L, true, true,
     R, false, is_right_larger
 > {
-    static overflow_result detect_addition_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_addition(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left > 0) {
             if (static_cast<L>(right) > integer_traits<L>::const_max - left) {
-                result = e_positive_overflow;
+                result = e_positive_overflow_detected;
             }
         } // Impossible to cause overflow when left <= 0
         return result;
@@ -318,10 +318,10 @@ struct detect_overflow_impl_subtraction<
     L, false, is_left_larger,
     R, false, is_right_larger
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left < right + integer_traits<L>::const_min) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -332,12 +332,12 @@ struct detect_overflow_impl_subtraction<
     L, true, is_left_larger,
     R, true, is_right_larger
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && left < right + integer_traits<L>::const_min) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         } else if (right < 0 && left > integer_traits<L>::const_max + right) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -348,12 +348,12 @@ struct detect_overflow_impl_subtraction<
     L, false, is_left_larger,
     R, true, false
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && left < static_cast<L>(right + integer_traits<L>::const_min + right)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         } else if (right < 0 && left > static_cast<L>(integer_traits<L>::const_max + right)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -364,12 +364,12 @@ struct detect_overflow_impl_subtraction<
     L, false, is_left_larger,
     R, true, true
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > 0 && right > static_cast<R>(left - integer_traits<L>::const_min)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         } else if (right < 0 && static_cast<R>(left) > static_cast<R>(integer_traits<L>::const_max + right)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -380,12 +380,12 @@ struct detect_overflow_impl_subtraction<
     L, true, is_left_larger,
     R, false, false
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left >= 0 && left < static_cast<L>(integer_traits<L>::const_min + right)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         } else if (left < 0 && right > static_cast<R>(left - integer_traits<L>::const_min)) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }
@@ -396,10 +396,10 @@ struct detect_overflow_impl_subtraction<
     L, true, is_left_larger,
     R, false, true
 > {
-    static overflow_result detect_subtraction_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_subtraction(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (right > static_cast<R>(left - integer_traits<L>::const_min)) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -410,16 +410,16 @@ struct detect_overflow_impl_multiplication<
     L, true,
     R, true
 > {
-    static overflow_result detect_multiplication_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left != 0 && right != 0) {
             if ((left ^ right) > 0) {
                 if (abs(right) > abs(integer_traits<L>::const_max / left)) {
-                    result = e_positive_overflow;
+                    result = e_positive_overflow_detected;
                 }
             } else {
                 if (abs(right) > abs(integer_traits<L>::const_min / left)) {
-                    result = e_negative_overflow;
+                    result = e_negative_overflow_detected;
                 }
             }
         }
@@ -432,11 +432,11 @@ struct detect_overflow_impl_multiplication<
     L, false,
     R, false
 > {
-    static overflow_result detect_multiplication_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left != 0 && right != 0) {
             if (right > integer_traits<L>::const_max / left) {
-                result = e_positive_overflow;
+                result = e_positive_overflow_detected;
             }
         }
         return result;
@@ -448,16 +448,16 @@ struct detect_overflow_impl_multiplication<
     L, false,
     R, true
 > {
-    static overflow_result detect_multiplication_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left != 0 && right != 0) {
             if ((left ^ right) > 0) {
                 if (abs(right) > integer_traits<L>::const_max / left) {
-                    result = e_positive_overflow;
+                    result = e_positive_overflow_detected;
                 }
             } else {
                 if (abs(right) > integer_traits<L>::const_min / left) {
-                    result = e_negative_overflow;
+                    result = e_negative_overflow_detected;
                 }
             }
         }
@@ -470,16 +470,16 @@ struct detect_overflow_impl_multiplication<
     L, true,
     R, false
 > {
-    static overflow_result detect_multiplication_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_multiplication(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left != 0 && right != 0) {
             if ((left ^ right) > 0) {
                 if (right > integer_traits<L>::const_max / left) {
-                    result = e_positive_overflow;
+                    result = e_positive_overflow_detected;
                 }
             } else {
                 if (right > integer_traits<L>::const_min / left) {
-                    result = e_negative_overflow;
+                    result = e_negative_overflow_detected;
                 }
             }
         }
@@ -493,10 +493,10 @@ template <
     typename R, bool is_right_signed
 >
 struct detect_overflow_impl_division {
-    static overflow_result detect_division_overflow(L const left, R const right) {
+    static overflow_result detect_overflow_division(L const left, R const right) {
         (void)left;
         (void)right;
-        return e_no_overflow;
+        return e_no_overflow_detected;
     }
 };
 
@@ -505,10 +505,10 @@ struct detect_overflow_impl_division<
     L, false,
     R, true
 > {
-    static overflow_result detect_division_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_division(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left == integer_traits<L>::const_max && right == -1) {
-            result = e_negative_overflow;
+            result = e_negative_overflow_detected;
         }
         return result;
     }
@@ -519,10 +519,10 @@ struct detect_overflow_impl_division<
     L, true,
     R, true
 > {
-    static overflow_result detect_division_overflow(L const left, R const right) {
-        overflow_result result = e_no_overflow;
+    static overflow_result detect_overflow_division(L const left, R const right) {
+        overflow_result result = e_no_overflow_detected;
         if (left == integer_traits<L>::const_min && right == -1) {
-            result = e_positive_overflow;
+            result = e_positive_overflow_detected;
         }
         return result;
     }

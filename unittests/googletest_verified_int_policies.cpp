@@ -16,7 +16,6 @@ namespace {
 using boost::integer_traits;
 using boost::saturate_int;
 using boost::verified_int;
-using boost::nan_overflow;
 using boost::saturate_overflow;
 
 TEST(verified_int_TDD, Conversion) {
@@ -105,19 +104,6 @@ TEST(verified_int_TDD, Conversion4) {
     valueA = 256;
     valueB = saturate_int<uint8_t>::type(valueA);
     EXPECT_EQ(valueB, 255);
-}
-
-TEST(BoundingPolicies_TDD, nan_overflow) {
-    verified_int<uint8_t, nan_overflow> valueA(130U);
-    verified_int<uint8_t, nan_overflow> valueB(130U);
-    verified_int<uint8_t, nan_overflow> valueC(0U);
-
-    EXPECT_NO_THROW(valueC = valueA + valueB);
-    uint8_t NANValue = integer_traits<uint8_t>::const_max;
-    EXPECT_EQ(NANValue, valueC);
-
-    EXPECT_NO_THROW(valueC += 5U);
-    EXPECT_EQ(NANValue, valueC);
 }
 
 TEST(BoundingPolicies_TDD, SaturateAddition) {

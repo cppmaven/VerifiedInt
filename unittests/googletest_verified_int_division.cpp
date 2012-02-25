@@ -44,7 +44,7 @@ TEST(verified_intDivision_TDD, UnSignedMaxDivideNegOne) {
     verified_int<int8_t, throw_overflow> rhs(-1);
     EXPECT_THROW(({
         lhs /= rhs;
-    }), boost::negative_overflow);
+    }), boost::negative_overflow_detected);
 }
 
 TEST(verified_intDivision_TDD, SignedMinDivideNegOne) {
@@ -52,7 +52,7 @@ TEST(verified_intDivision_TDD, SignedMinDivideNegOne) {
     verified_int<int8_t, throw_overflow> rhs(-1);
     EXPECT_THROW(({
         lhs /= rhs;
-    }), boost::positive_overflow);
+    }), boost::positive_overflow_detected);
 }
 
 TEST(verified_intDivision_TDD, UnSignedMinDivideNegOne) {
@@ -63,4 +63,13 @@ TEST(verified_intDivision_TDD, UnSignedMinDivideNegOne) {
     }));
     EXPECT_EQ(lhs, 0);
 }
+
+TEST(verified_intDivision_TDD, UnSignedMaxDivideNegOneTwice) {
+    verified_int<uint8_t, throw_overflow> lhs(boost::integer_traits<uint8_t>::const_max);
+    verified_int<int8_t, throw_overflow> rhs(-1);
+    EXPECT_NO_THROW(({
+        lhs = lhs / rhs / rhs;
+    }));
+}
+
 } // namespace anonymous

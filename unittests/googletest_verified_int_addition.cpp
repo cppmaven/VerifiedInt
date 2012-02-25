@@ -16,6 +16,28 @@ namespace {
 using boost::verified_int;
 using boost::throw_overflow;
 
+TEST(verified_intAddition_TDD, chainingBinaryAssignToVerified) {
+    verified_int<uint8_t, throw_overflow> testA(0);
+    EXPECT_NO_THROW(({
+        testA = 250 + testA + 30 - 40;
+    }));
+}
+
+TEST(verified_intAddition_TDD, chainingBinaryAssignToVerifiedOverflow) {
+    verified_int<uint8_t, throw_overflow> testA(0);
+    EXPECT_THROW(({
+        testA = 250 + testA + 30;
+    }), boost::positive_overflow_detected);
+}
+
+TEST(verified_intAddition_TDD, chainingBinaryAssignToNonVerified) {
+    verified_int<uint8_t, throw_overflow> testA(0);
+    uint8_t var = 0;
+    EXPECT_NO_THROW(({
+        var = 250 + testA + 30;
+    }));
+}
+
 TEST(verified_intAddition_TDD, Add_Verified_To_Verified) {
     verified_int<int32_t, throw_overflow> testA(0);
     verified_int<int32_t, throw_overflow> testB(0);
