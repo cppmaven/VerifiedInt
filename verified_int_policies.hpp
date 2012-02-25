@@ -70,12 +70,6 @@ struct throw_overflow : public overflow_detection_on
 
 struct assert_overflow : public overflow_detection_on
 {
-    template <typename L, typename R>
-    struct detect_overflow
-    {
-        typedef do_detect_overflow<L, R> type;
-    };
-
     template <typename T>
     static T handle_overflow(T const value, overflow_result const detected)
     {

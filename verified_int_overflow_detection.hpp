@@ -547,6 +547,8 @@ struct detect_overflow_impl_division<
     }
 };
 
+// Base classes for the ignore_overflow.  Allows the compiler
+// to optimize out the call to detect_overflow().
 struct overflow_detection_off
 {
     template <typename L, typename R>
@@ -556,6 +558,7 @@ struct overflow_detection_off
     };
 };
 
+// Base class for all policies except ignore_overflow.
 struct overflow_detection_on
 {
     template <typename L, typename R>
